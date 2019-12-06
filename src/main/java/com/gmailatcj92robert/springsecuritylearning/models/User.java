@@ -1,29 +1,30 @@
 package com.gmailatcj92robert.springsecuritylearning.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
     private String name;
     private String lastname;
     private String email;
     private String password;
-    @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
-           name="user_role",
-            joinColumns={@JoinColumn(name="USER_ID",referencedColumnName = "ID")},
-            inverseJoinColumns = {@JoinColumn(name="ROLE_ID",
-                   referencedColumnName="ID")})
+            name = "user_role",
+            joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")},
+            inverseJoinColumns = {@JoinColumn(name = "ROLE_ID",
+                    referencedColumnName = "ID")})
+
     private List<Role> roles;
     private boolean enabled;
 
@@ -50,6 +51,20 @@ public class User implements UserDetails {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", name='" + name + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", roles=" + roles +
+                ", enabled=" + enabled +
+                '}';
     }
 
     @Override

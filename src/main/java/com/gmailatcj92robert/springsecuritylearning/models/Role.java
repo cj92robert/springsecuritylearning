@@ -1,5 +1,6 @@
 package com.gmailatcj92robert.springsecuritylearning.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
@@ -8,10 +9,11 @@ import java.util.List;
 @Entity
 public class Role implements GrantedAuthority {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    @ManyToMany( mappedBy="roles")
+    @ManyToMany(mappedBy = "roles")
+    @JsonIgnore
     private List<User> users;
 
     public Role() {

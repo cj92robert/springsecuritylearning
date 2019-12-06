@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.*;
 
 @CrossOrigin
@@ -28,30 +30,11 @@ public class UserController {
     public UserController(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-       //test szybki...dane do logowania z frontendu
-        Role rola= new Role("USER");
-        roleRepository.save(rola);
-        List<Role> rols=new ArrayList<Role>();
-        rols.add(rola);
-        User user = new UserBuilder().createUser();
-        user.setUsername("cj92");
-        user.setPassword(new BCryptPasswordEncoder().encode("cj"));
-        user.setRoles(rols);
-        user.setEnabled(true);
-        User user2=new UserBuilder().setName("cj").
-                setEmail("a@a.pl").
-                setPassword(new BCryptPasswordEncoder().encode("test")).
-                setUsername("rob").
-                setRoles(rols).
-                createUser();
-        userRepository.save(user2);
-        userRepository.save(user);
-
     }
 
     @GetMapping
-    public ResponseEntity<String[]> test(){
-        String a[] ={ "test","test2"};
-        return new ResponseEntity<>(a, HttpStatus.OK);
+    public ResponseEntity<String> test(HttpServletRequest request) {
+
+        return new ResponseEntity<>(request.getRemoteUser(), HttpStatus.OK);
     }
 }
