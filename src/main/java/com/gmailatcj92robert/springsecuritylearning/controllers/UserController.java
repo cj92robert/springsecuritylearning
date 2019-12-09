@@ -1,22 +1,17 @@
 package com.gmailatcj92robert.springsecuritylearning.controllers;
 
-import com.gmailatcj92robert.springsecuritylearning.models.Role;
 import com.gmailatcj92robert.springsecuritylearning.models.User;
-import com.gmailatcj92robert.springsecuritylearning.models.UserBuilder;
 import com.gmailatcj92robert.springsecuritylearning.repositories.RoleRepository;
 import com.gmailatcj92robert.springsecuritylearning.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.gmailatcj92robert.springsecuritylearning.services.UtilUserService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -24,17 +19,60 @@ import java.util.*;
 public class UserController {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
+    private UtilUserService utilUserService;
 
 
-    @Autowired
-    public UserController(UserRepository userRepository, RoleRepository roleRepository) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+    public UserController(UtilUserService utilUserService) {
+        this.utilUserService = utilUserService;
     }
 
     @GetMapping
-    public ResponseEntity<String> test(HttpServletRequest request) {
-
-        return new ResponseEntity<>(request.getRemoteUser(), HttpStatus.OK);
+    public ResponseEntity<List<User>> getAllUsers(Pageable pageable, HttpServletRequest request) {
+        return new ResponseEntity<>(utilUserService.getAllUsers(), HttpStatus.OK);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable long id) {
+        Optional<User> user = utilUserService.findById(id);
+        if (user.isPresent())
+            return new ResponseEntity<>(user.get(), HttpStatus.OK);
+        else
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+
+    @PutMapping("/{id}/enabled")
+    public ResponseEntity setEnabledUser(@PathVariable long id, @RequestBody boolean isEnabled) {
+        if (utilUserService.changeIsEnabled(id, isEnabled)) {
+            return new ResponseEntity(HttpStatus.OK);
+        } else
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+
+    }
+
+    @PutMapping("/{id}/roles")
+    public ResponseEntity<User> setRoles(@PathVariable long id, @RequestBody String roles[]) {
+
+        if (utilUserService.setRoles(id, roles)) {
+
+            Optional<User> user = utilUserService.findById(id);
+
+            if (user.isPresent())
+                return new ResponseEntity<>(user.get(), HttpStatus.OK);
+
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteUserById(@PathVariable long id) {
+
+        if (utilUserService.deleteUserById(id))
+            return new ResponseEntity(HttpStatus.OK);
+        else
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+
+    }
+
 }

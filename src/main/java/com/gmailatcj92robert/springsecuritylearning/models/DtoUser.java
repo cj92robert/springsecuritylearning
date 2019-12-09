@@ -1,10 +1,7 @@
 package com.gmailatcj92robert.springsecuritylearning.models;
 
-import org.hibernate.validator.constraints.UniqueElements;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.Collections;
 
@@ -76,6 +73,6 @@ public class DtoUser {
     }
 
     public User toUser() {
-        return new User(username, name, lastname, email, password, Collections.EMPTY_LIST, true);
+        return new User(username, name, lastname, email, password, Collections.EMPTY_LIST, false);
     }
 }

@@ -17,6 +17,7 @@ public class User implements UserDetails {
     private String name;
     private String lastname;
     private String email;
+    @JsonIgnore
     private String password;
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
@@ -27,6 +28,8 @@ public class User implements UserDetails {
 
     private List<Role> roles;
     private boolean enabled;
+    private Long activationKey;
+    private Long remindKey;
 
     public User() {
     }
@@ -51,6 +54,14 @@ public class User implements UserDetails {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getActivationKey() {
+        return activationKey;
+    }
+
+    public void setActivationKey(Long activationKey) {
+        this.activationKey = activationKey;
     }
 
     @Override
@@ -118,6 +129,14 @@ public class User implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Long getRemindKey() {
+        return remindKey;
+    }
+
+    public void setRemindKey(Long remindKey) {
+        this.remindKey = remindKey;
     }
 
     @Override

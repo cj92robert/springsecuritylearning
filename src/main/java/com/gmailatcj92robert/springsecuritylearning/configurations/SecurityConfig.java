@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -22,9 +21,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private PasswordEncoder passwordEncoder;
 
 
-
     @Bean
-    public PasswordEncoder getEncoder(){
+    public PasswordEncoder getEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -40,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/auth").permitAll()
                 .antMatchers(HttpMethod.GET, "/auth").permitAll()
                 .antMatchers("/todos*").hasAuthority("USER")
-                .antMatchers("/user*").hasAuthority("USER")
+                .antMatchers("/user*").hasAuthority("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/todos*").hasAuthority("ADMIN")
                 .and().httpBasic()
                 .and()
