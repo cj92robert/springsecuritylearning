@@ -1,7 +1,7 @@
 package com.gmailatcj92robert.springsecuritylearning.controllers;
 
 
-import com.gmailatcj92robert.springsecuritylearning.models.DtoUser;
+import com.gmailatcj92robert.springsecuritylearning.models.DtoRegisterUser;
 import com.gmailatcj92robert.springsecuritylearning.models.User;
 import com.gmailatcj92robert.springsecuritylearning.services.UtilUserService;
 import org.springframework.http.HttpStatus;
@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Optional;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -35,28 +36,19 @@ public class AuthController {
 
     }
 
-    @PostMapping
-    public ResponseEntity<User> register(@Valid @RequestBody DtoUser dtoUser) {
+    @PostMapping("/register")
+    public ResponseEntity<User> register(@Valid @RequestBody DtoRegisterUser dtoRegisterUser) {
 
-        User newUser = utilUserService.createUser(dtoUser);
+        User newUser = utilUserService.createUser(dtoRegisterUser);
         return new ResponseEntity<>(newUser, HttpStatus.OK);
 
     }
 
 
-    @PutMapping
-    public ResponseEntity<User> update(@Valid @RequestBody DtoUser dtoUser) {
-
-        User user = utilUserService.updateUser(dtoUser);
-        return new ResponseEntity<>(user, HttpStatus.OK);
-
-    }
-
-
     @PutMapping("/password/")
-    public ResponseEntity updatePasswordMail(@RequestBody String userName) {
+    public ResponseEntity resetPassword(@RequestBody String userName) {
 
-        if (utilUserService.updatePassword(userName))
+        if (utilUserService.resetPassword(userName))
             return new ResponseEntity(HttpStatus.OK);
         else
             return new ResponseEntity(HttpStatus.NOT_FOUND);

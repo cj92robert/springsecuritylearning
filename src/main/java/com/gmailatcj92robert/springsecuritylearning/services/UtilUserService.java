@@ -1,12 +1,14 @@
 package com.gmailatcj92robert.springsecuritylearning.services;
 
 import com.gmailatcj92robert.springsecuritylearning.errors.AccountException;
-import com.gmailatcj92robert.springsecuritylearning.models.DtoUser;
+import com.gmailatcj92robert.springsecuritylearning.models.DtoRegisterUser;
 import com.gmailatcj92robert.springsecuritylearning.models.Role;
 import com.gmailatcj92robert.springsecuritylearning.models.User;
 import com.gmailatcj92robert.springsecuritylearning.repositories.RoleRepository;
 import com.gmailatcj92robert.springsecuritylearning.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,17 +36,17 @@ public class UtilUserService {
         this.mailService = mailService;
     }
 
-    public User createUser(DtoUser dtoUser) {
-        userRepository.findByUsername(dtoUser.getUsername())
+    public User createUser(DtoRegisterUser dtoRegisterUser) {
+        userRepository.findByUsername(dtoRegisterUser.getUsername())
                 .ifPresent((x) -> {
                     throw new AccountException("Użytkownik o podane nazwie już istnieje");
                 });
 
 
-        User user = dtoUser.toUser();
-        user.setPassword(passwordEncoder.encode(dtoUser.getPassword()));
+        User user = dtoRegisterUser.toUser();
+        user.setPassword(passwordEncoder.encode(dtoRegisterUser.getPassword()));
         List<Role> rolesNewUser = new ArrayList<>();
-        roleRepository.findByName("USER").ifPresent(rolesNewUser::add);
+        roleRepository.findByName("ROLE_USER").ifPresent(rolesNewUser::add);
         user.setRoles(rolesNewUser);
         user = userRepository.save(user);
         mailService.sendActivationKey(user.getId());
@@ -57,31 +59,32 @@ public class UtilUserService {
 
     }
 
-    public User updateUser(DtoUser dtoUser) {
+    public User updateUserMail(DtoRegisterUser dtoRegisterUser) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
 
-        user.setEmail(dtoUser.getEmail());
-        user.setName(dtoUser.getName());
-        user.setLastname(dtoUser.getLastname());
+        user.setEmail(dtoRegisterUser.getEmail());
+        ;
 
         userRepository.save(user);
         return user;
     }
 
-    public List<User> getAllUsers() {
-        List<User> usersList = new ArrayList<>();
-        userRepository.findAll().forEach(usersList::add);
-        return usersList;
+    public Page<User> getAllUsers(Pageable pageable) {
+
+        return userRepository.findAll(pageable);
+
     }
 
 
     public Optional<User> findById(long id) {
+
         return userRepository.findById(id);
     }
 
     public boolean deleteUserById(long id) {
+
 
         if (userRepository.findById(id).isPresent()) {
             userRepository.deleteById(id);
@@ -91,11 +94,11 @@ public class UtilUserService {
         }
     }
 
-    public boolean updatePassword(String userName) {
+    public boolean resetPassword(String userName) {
         if (userRepository.findByUsername(userName).isPresent()) {
 
-            User user = userRepository.findByUsername(userName).get();
-            mailService.sendPasswordForgetKey(user.getId());
+            long id = userRepository.getUserIdByUsername(userName);
+            mailService.sendPasswordForgetKey(id);
             return true;
 
         } else

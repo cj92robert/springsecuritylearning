@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -28,20 +29,21 @@ public class MailServiceImpl implements MailService {
     public void sendActivationKey(long userId) {
 
         long activationKey = random.nextLong();
-        if (userRepository.findById(userId).isPresent()) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isPresent()) {
 
-            User user = userRepository.findById(userId).get();
-            user.setActivationKey(activationKey);
-            userRepository.save(user);
+
+            userRepository.setActivationKey(userId, activationKey);
+
 
             String message = "Jeśli założyłes konto w serwisie "
                     + urlWeb
                     + " kliknij w link http://" + urlWeb
-                    + "/" + user.getId()
+                    + "/" + userId
                     + "/a/" + activationKey
                     + " by aktywować. /n   Jesli nie zakładałeś u nas konta zignoruj mail.";
             String subject = "Aktywacja użytkownika";
-            sendMailToUser(user.getEmail(), message, subject);
+            sendMailToUser(user.get().getEmail(), message, subject);
 
         }
     }
@@ -51,20 +53,19 @@ public class MailServiceImpl implements MailService {
 
 
         long passwordRemindKey = random.nextLong();
-        if (userRepository.findById(userId).isPresent()) {
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isPresent()) {
 
-            User user = userRepository.findById(userId).get();
-            user.setRemindKey(passwordRemindKey);
-            userRepository.save(user);
+            userRepository.setRemindPasswordKey(userId, passwordRemindKey);
 
             String message = "Jeśli chcesz zmienić hasło w "
                     + urlWeb
                     + " kliknij w link http://" + urlWeb
-                    + "/" + user.getId()
+                    + "/" + userId
                     + "/p/" + passwordRemindKey
                     + "    Jesli nie chciałeś zmienć hasła zignoruj mail.";
             String subject = "Aktywacja użytkownika";
-            sendMailToUser(user.getEmail(), message, subject);
+            sendMailToUser(user.get().getEmail(), message, subject);
 
         }
 
