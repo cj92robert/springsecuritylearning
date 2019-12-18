@@ -7,10 +7,12 @@
     Start projektu grudzień 2019.
 
 ##Do celowy funkcjonalność. 
+
     1 Logowanie, rejstracja, zarzadzanie użytkownikami, zbieranie danych diagnostycznych za pomoca aspektów.
     2 Obsluga wystawiania faktur. Wystawianie (frontend drukowanie do pdf), katalogowanie, przetwarzanie, wyszukiwanie, stałe towary.
     3 Baza klientów do wystawiania faktur dla każdego użytkownika, szukanie danych w bazie gus.
     4 Pokrycie całości testami.
+    
 ###Endpointy 
 
 
