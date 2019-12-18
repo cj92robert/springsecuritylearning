@@ -3,7 +3,6 @@ package com.gmailatcj92robert.springsecuritylearning.repositories;
 import com.gmailatcj92robert.springsecuritylearning.models.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;

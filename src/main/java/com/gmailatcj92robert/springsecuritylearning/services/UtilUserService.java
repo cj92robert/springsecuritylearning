@@ -48,8 +48,9 @@ public class UtilUserService {
         List<Role> rolesNewUser = new ArrayList<>();
         roleRepository.findByName("ROLE_USER").ifPresent(rolesNewUser::add);
         user.setRoles(rolesNewUser);
+        user.setEnabled(true);
         user = userRepository.save(user);
-        mailService.sendActivationKey(user.getId());
+        //mailService.sendActivationKey(user.getId());  //disable for testing.
         return user;
     }
 
@@ -65,7 +66,6 @@ public class UtilUserService {
         User user = (User) authentication.getPrincipal();
 
         user.setEmail(dtoRegisterUser.getEmail());
-        ;
 
         userRepository.save(user);
         return user;
@@ -152,11 +152,10 @@ public class UtilUserService {
             User user = userRepository.findById(id).get();
             List<Role> roleList = new ArrayList<>();
 
-            Arrays.stream(roles).forEach((role) -> {
-                roleRepository.findByName(role).ifPresentOrElse(roleList::add, () -> {
-                    roleList.add(roleRepository.save(new Role(role)));
-                });
-            });
+            Arrays.stream(roles).forEach((role) ->
+                    roleRepository.findByName(role).ifPresentOrElse(roleList::add,
+                            () -> roleList.add(roleRepository.save(new Role(role))))
+            );
 
             user.setRoles(roleList);
             userRepository.save(user);

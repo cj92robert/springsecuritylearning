@@ -1,5 +1,6 @@
 package com.gmailatcj92robert.springsecuritylearning.configurations;
 
+import com.gmailatcj92robert.springsecuritylearning.jwt.JwtFilter;
 import com.gmailatcj92robert.springsecuritylearning.services.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -44,7 +45,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/todos*").hasAuthority("ROLE_USER")
                 .antMatchers("/user*").hasAuthority("ROLE_ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/todos*").hasAuthority("ROLE_ADMIN")
-                .and().httpBasic()
+                .and()
+                .addFilter(new JwtFilter(authenticationManager()))
+                .httpBasic()
                 .and()
                 .csrf().disable();
 

@@ -1,9 +1,11 @@
 package com.gmailatcj92robert.springsecuritylearning.controllers;
 
 
+import com.gmailatcj92robert.springsecuritylearning.jwt.JwtUtil;
 import com.gmailatcj92robert.springsecuritylearning.models.DtoRegisterUser;
 import com.gmailatcj92robert.springsecuritylearning.models.User;
 import com.gmailatcj92robert.springsecuritylearning.services.UtilUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,18 +20,30 @@ import java.util.Optional;
 public class AuthController {
 
     private UtilUserService utilUserService;
+    private JwtUtil jwtUtil;
 
-    public AuthController(UtilUserService utilUserService) {
+    @Autowired
+    public AuthController(UtilUserService utilUserService, JwtUtil jwtUtil) {
         this.utilUserService = utilUserService;
+        this.jwtUtil = jwtUtil;
     }
 
     @GetMapping
-    public ResponseEntity<User> login(HttpServletRequest request) {
+    public ResponseEntity<String> login(HttpServletRequest request) {
+        Optional<User> user = utilUserService.getLogedUser(request);
+        if (user.isPresent()) {
+            return new ResponseEntity<>(jwtUtil.generateJwtToken(user.get()), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        Optional<User> logUser = utilUserService.getLogedUser(request);
+    }
 
-        if (logUser.isPresent()) {
-            return new ResponseEntity<>(logUser.get(), HttpStatus.OK);
+    @GetMapping("/islogin")
+    public ResponseEntity<User> isLogged(HttpServletRequest request) {
+        Optional<User> user = utilUserService.getLogedUser(request);
+        if (user.isPresent()) {
+            return new ResponseEntity<User>(user.get(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
@@ -40,7 +54,7 @@ public class AuthController {
     public ResponseEntity<User> register(@Valid @RequestBody DtoRegisterUser dtoRegisterUser) {
 
         User newUser = utilUserService.createUser(dtoRegisterUser);
-        return new ResponseEntity<>(newUser, HttpStatus.OK);
+        return new ResponseEntity<User>(newUser, HttpStatus.OK);
 
     }
 
