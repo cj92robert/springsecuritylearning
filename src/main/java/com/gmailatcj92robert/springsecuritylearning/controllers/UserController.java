@@ -76,9 +76,10 @@ public class UserController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity deleteUserById(@PathVariable long id) {
 
-        if (utilUserService.deleteUserById(id))
+        if (utilUserService.findById(id).isPresent()) {
+            utilUserService.deleteUserById(id);
             return new ResponseEntity(HttpStatus.OK);
-        else
+        } else
             return new ResponseEntity(HttpStatus.NOT_FOUND);
 
     }
